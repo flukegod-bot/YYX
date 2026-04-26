@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>意想行</title>
+<style>
+body{font-family:sans-serif;background:#f5f5f5;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+.app{max-width:500px;margin:0 auto;padding:20px 15px}
+.hidden{display:none}
+.header{background:#1a1a2e;padding:35px 20px 28px;border-radius:0 0 28px 28px;color:white;text-align:center;margin:-20px -15px 20px}
+.menu-btn{display:block;width:100%;padding:16px 14px;margin-bottom:8px;background:white;border:none;border-radius:14px;font-size:15px;text-align:left;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.04)}
+.menu-btn:active{background:#f0f0f0}
+.back-btn{background:none;border:none;font-size:16px;color:#FF6B35;font-weight:bold;cursor:pointer;padding:10px;margin-bottom:10px}
+.section{background:white;padding:16px;border-radius:14px;margin-bottom:10px}
+.section h3{font-size:15px;margin:0 0 12px;color:#1a1a2e}
+.qty-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #eee}
+.qty-ctrl{display:flex;align-items:center;gap:8px}
+.qty-ctrl button{width:34px;height:34px;border-radius:17px;border:2px solid #FF6B35;background:white;color:#FF6B35;font-size:18px;font-weight:bold;cursor:pointer}
+.qty-ctrl button:active{background:#FFF3E0}
+.qty-ctrl span{font-size:18px;font-weight:bold;min-width:24px;text-align:center}
+.chip-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.chip-btn{padding:8px 14px;border-radius:18px;cursor:pointer;font-size:12px;font-weight:600;border:2px solid #ddd;background:white;color:#666}
+.chip-btn.on{border-color:#FF6B35;background:#FFF3E0;color:#FF6B35}
+.result-box{background:#E8F5E9;padding:22px;border-radius:14px;text-align:center;margin:12px 0}
+.result-price{font-size:34px;font-weight:800;color:#2E7D32}
+.big-btn{display:block;width:100%;padding:15px;border-radius:12px;font-size:15px;font-weight:bold;cursor:pointer;border:none;margin-bottom:8px;color:white;text-align:center}
+.btn-orange{background:#FF6B35}.btn-green{background:#4CAF50}.btn-purple{background:#7C3AED}
+input[type="number"],input[type="text"],input[type="date"]{width:100%;padding:12px;font-size:14px;border:2px solid #ddd;border-radius:10px;margin-bottom:8px;background:#fafafa}
+.add-row{display:flex;gap:6px;margin-bottom:8px}
+.add-row input{flex:1;padding:10px 12px;border:2px solid #ddd;border-radius:10px;font-size:14px;margin-bottom:0}
+.add-row button{padding:10px 14px;background:#FF6B35;color:white;border:none;border-radius:10px;font-size:14px;font-weight:bold;cursor:pointer}
+.list-item{display:flex;justify-content:space-between;padding:10px 12px;background:#fafafa;border-radius:8px;margin-bottom:4px;font-size:14px}
+.del-btn{background:none;border:none;color:#f44336;font-size:16px;cursor:pointer}
+.prog-row{display:flex;align-items:center;gap:8px;padding:12px;background:#fafafa;border-radius:8px;margin-bottom:4px;cursor:pointer}
+.prog-row.done{background:#E8F5E9}
+.prog-box{width:24px;height:24px;border:2px solid #ccc;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:bold}
+.prog-row.done .prog-box{background:#4CAF50;border-color:#4CAF50;color:white}
+.summary-row{display:flex;justify-content:space-between;padding:8px 0;font-size:13px}
+.summary-row.tt{font-weight:800;font-size:17px;border-top:2px solid #ddd;padding-top:10px;margin-top:6px}
+.summary-row.tt span:last-child{color:#FF6B35;font-size:20px}
+.contract-box{background:white;padding:18px;border-radius:10px;margin-top:12px;font-size:12px;line-height:1.7;border:1px solid #ddd}
+.contract-box table{width:100%;border-collapse:collapse;margin:8px 0}
+.contract-box td{padding:6px 8px;border:1px solid #ddd}
+.contract-box td:first-child{background:#f9f9f9;font-weight:600;width:30%}
+.fp-box{background:#FFF5E6;border:3px solid #333;border-radius:10px;width:100%;height:280px;position:relative;overflow:hidden;margin:8px 0}
+.fp-wall{position:absolute;background:#333}
+.fp-label{position:absolute;font-size:10px;color:#666;font-weight:bold}
+.fp-item{position:absolute;border:2px solid #333;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:14px;color:white;z-index:5}
+.v3d-box{width:100%;height:340px;background:#1a1a2e;border-radius:14px;position:relative;overflow:hidden;margin:8px 0}
+.v3d-box canvas{width:100%;height:100%}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- HOME -->
+<div id="home">
+    <div class="header"><span style="font-size:42px">🏗️</span><div style="font-size:26px;font-weight:800;letter-spacing:4px">意 想 行</div><div style="font-size:12px;opacity:0.8;margin-top:4px">室內設計一站式平台</div></div>
+    <button class="menu-btn" id="m-furniture">🪑 <b>訂造傢俬計算器</b><br><small style="color:#999">即時計費</small></button>
+    <button class="menu-btn" id="m-quote">💰 <b>裝修報價計算機</b><br><small style="color:#999">估算費用</small></button>
+    <button class="menu-btn" id="m-floorplan">📐 <b>2D 平面擺位圖</b><br><small style="color:#999">長按拖動傢俬</small></button>
+    <button class="menu-btn" id="m-view3d">🏠 <b>3D 立體效果圖</b><br><small style="color:#999">拖曳旋轉</small></button>
+    <button class="menu-btn" id="m-contract">📄 <b>專業合約生成器</b><br><small style="color:#999">列印PDF</small></button>
+    <button class="menu-btn" id="m-style">🎨 <b>風格建議</b><br><small style="color:#999">AI測驗</small></button>
+    <button class="menu-btn" id="m-lists">📋 <b>裝修清單管理</b><br><small style="color:#999">電器·物料·進度</small></button>
+</div>
+
+<!-- FURNITURE -->
+<div id="furniture" class="hidden">
+    <button class="back-btn" id="b-furniture">← 返回</button>
+    <div class="section"><h3>🛏️ 睡房</h3>
+        <div class="qty-row"><span><b>訂造衣櫃</b></span><span style="color:#FF6B35">$3,500/呎</span><div class="qty-ctrl"><button id="wardrobe-m">−</button><span id="q-wardrobe">0</span><button id="wardrobe-p">+</button></div></div>
+        <div class="qty-row"><span><b>雙人床</b></span><span style="color:#FF6B35">$9,800</span><div class="qty-ctrl"><button id="bed-m">−</button><span id="q-bed">0</span><button id="bed-p">+</button></div></div>
+    </div>
+    <div class="section"><h3>🛋️ 客廳</h3>
+        <div class="qty-row"><span><b>電視櫃</b></span><span style="color:#FF6B35">$3,200/呎</span><div class="qty-ctrl"><button id="tvstand-m">−</button><span id="q-tvstand">0</span><button id="tvstand-p">+</button></div></div>
+        <div class="qty-row"><span><b>L型梳化</b></span><span style="color:#FF6B35">$15,800</span><div class="qty-ctrl"><button id="sofa-m">−</button><span id="q-sofa">0</span><button id="sofa-p">+</button></div></div>
+    </div>
+    <div class="section"><h3>📏 櫃類呎數</h3>
+        <input type="number" id="feetInput" value="8" min="1">
+        <div class="chip-row"><button class="chip-btn on" id="f-8">8呎</button><button class="chip-btn" id="f-10">10呎</button><button class="chip-btn" id="f-12">12呎</button></div>
+    </div>
+    <div class="result-box"><div class="result-price" id="furnitureTotal">HK$ 0</div></div>
+    <button class="big-btn btn-green" id="add-contract">➕ 加入合約</button>
+    <button class="big-btn btn-purple" id="to-contract">📄 去合約 →</button>
+</div>
+
+<!-- QUOTE -->
+<div id="quote" class="hidden">
+    <button class="back-btn" id="b-quote">← 返回</button>
+    <div class="section"><h3>📐 面積</h3>
+        <input type="number" id="areaInput" value="500">
+        <div class="chip-row"><button class="chip-btn" id="a-300">300呎</button><button class="chip-btn on" id="a-500">500呎</button><button class="chip-btn" id="a-700">700呎</button></div>
+    </div>
+    <div class="result-box"><div class="result-price" id="renovationTotal">HK$ 450,000</div></div>
+    <button class="big-btn btn-orange" id="to-furniture">🪑 加傢俬 →</button>
+</div>
+
+<!-- FLOORPLAN -->
+<div id="floorplan" class="hidden">
+    <button class="back-btn" id="b-floorplan">← 返回</button>
+    <div class="section"><h3>📐 2D平面圖（長按拖動）</h3>
+        <div class="fp-box" id="fpCanvas">
+            <div class="fp-wall" style="left:29px;top:0;width:294px;height:4px;"></div>
+            <div class="fp-wall" style="left:29px;top:0;width:4px;height:228px;"></div>
+            <div class="fp-wall" style="left:29px;top:228px;width:294px;height:4px;"></div>
+            <div class="fp-wall" style="left:323px;top:0;width:4px;height:88px;"></div>
+            <div class="fp-wall" style="left:323px;top:140px;width:4px;height:92px;"></div>
+            <div class="fp-label" style="left:155px;top:5px;">5m</div>
+            <div class="fp-label" style="left:3px;top:100px;transform:rotate(-90deg)">4m</div>
+            <div class="fp-item" style="left:45px;top:160px;width:110px;height:55px;background:#8D6E63;">🛋️</div>
+            <div class="fp-item" style="left:210px;top:80px;width:65px;height:50px;background:#A1887F;">🍽️</div>
+            <div class="fp-item" style="left:195px;top:55px;width:28px;height:28px;background:#BCAAA4;">🪑</div>
+            <div class="fp-item" style="left:260px;top:55px;width:28px;height:28px;background:#BCAAA4;">🪑</div>
+            <div class="fp-item" style="left:195px;top:130px;width:28px;height:28px;background:#BCAAA4;">🪑</div>
+            <div class="fp-item" style="left:260px;top:130px;width:28px;height:28px;background:#BCAAA4;">🪑</div>
+            <div class="fp-item" style="left:45px;top:70px;width:80px;height:18px;background:#795548;">📺</div>
+            <div class="fp-item" style="left:285px;top:165px;width:25px;height:25px;background:#66BB6A;">🪴</div>
+        </div>
+    </div>
+</div>
+
+<!-- 3D -->
+<div id="view3d" class="hidden">
+    <button class="back-btn" id="b-view3d">← 返回</button>
+    <div class="section"><h3>🏠 3D效果圖（拖曳旋轉）</h3>
+        <div class="v3d-box" id="v3dBox"><canvas id="v3d"></canvas></div>
+    </div>
+</div>
+
+<!-- CONTRACT -->
+<div id="contract" class="hidden">
+    <button class="back-btn" id="b-contract">← 返回</button>
+    <div class="section"><h3>👤 客戶資料</h3>
+        <label style="font-size:12px;font-weight:bold;color:#555">姓名</label><input type="text" id="clientName" value="陳大文">
+        <label style="font-size:12px;font-weight:bold;color:#555">電話</label><input type="text" id="clientPhone" value="9123 4567">
+        <label style="font-size:12px;font-weight:bold;color:#555">地址</label><input type="text" id="projectAddress" value="香港新界沙田">
+        <label style="font-size:12px;font-weight:bold;color:#555">開工</label><input type="date" id="startDate" value="2025-03-01">
+        <label style="font-size:12px;font-weight:bold;color:#555">完工</label><input type="date" id="endDate" value="2025-06-01">
+    </div>
+    <div class="section"><h3>💰 費用摘要</h3>
+        <div class="summary-row"><span>裝修費</span><span id="sRenovation">HK$ 450,000</span></div>
+        <div class="summary-row"><span>傢俬費</span><span id="sFurniture">HK$ 0</span></div>
+        <div class="summary-row"><span>設計費(8%)</span><span id="sDesign">HK$ 36,000</span></div>
+        <div class="summary-row tt"><span>總金額</span><span id="sTotal">HK$ 486,000</span></div>
+    </div>
+    <button class="big-btn btn-orange" id="preview-contract">👁️ 預覽合約</button>
+    <button class="big-btn btn-green" id="print-contract">🖨️ 列印</button>
+    <div class="contract-box" id="contractBox" style="display:none;"></div>
+</div>
+
+<!-- STYLE -->
+<div id="style" class="hidden">
+    <button class="back-btn" id="b-style">← 返回</button>
+    <div class="section"><h3>🧠 AI測驗</h3><button class="big-btn btn-green" id="start-quiz">開始測驗 →</button></div>
+    <div class="section"><h3>📋 五大風格</h3>
+        <button class="menu-btn" id="st-modern">✨ <b>現代簡約</b></button>
+        <button class="menu-btn" id="st-nordic">🌿 <b>北歐風</b></button>
+        <button class="menu-btn" id="st-industrial">🏭 <b>工業風</b></button>
+        <button class="menu-btn" id="st-japanese">🍵 <b>日式禪風</b></button>
+        <button class="menu-btn" id="st-luxe">💎 <b>輕奢風格</b></button>
+    </div>
+</div>
+
+<!-- LISTS -->
+<div id="lists" class="hidden">
+    <button class="back-btn" id="b-lists">← 返回</button>
+    <div class="section"><h3>🔌 電器清單</h3>
+        <div class="add-row"><input type="text" id="applianceInput" placeholder="輸入電器名稱"><button id="add-appliance">＋ 新增</button></div>
+        <div id="applianceList"></div>
+    </div>
+    <div class="section"><h3>🧱 物料清單</h3>
+        <div class="add-row"><input type="text" id="materialInput" placeholder="輸入物料名稱"><button id="add-material">＋ 新增</button></div>
+        <div id="materialList"></div>
+    </div>
+    <div class="section"><h3>📋 工作進度清單</h3>
+        <div id="progressList">
+            <div class="prog-row"><span class="prog-box"></span>申請裝修許可</div>
+            <div class="prog-row"><span class="prog-box"></span>確定總預算</div>
+            <div class="prog-row"><span class="prog-box"></span>比較裝修公司報價</div>
+            <div class="prog-row"><span class="prog-box"></span>選定設計風格</div>
+            <div class="prog-row"><span class="prog-box"></span>現場度尺覆尺</div>
+            <div class="prog-row"><span class="prog-box"></span>確認水電圖則</div>
+            <div class="prog-row"><span class="prog-box"></span>揀選訂造傢俬</div>
+            <div class="prog-row"><span class="prog-box"></span>簽訂裝修合約</div>
+            <div class="prog-row"><span class="prog-box"></span>購買裝修保險</div>
+            <div class="prog-row"><span class="prog-box"></span>正式開工</div>
+            <div class="prog-row"><span class="prog-box"></span>水電工程完成</div>
+            <div class="prog-row"><span class="prog-box"></span>泥水工程完成</div>
+            <div class="prog-row"><span class="prog-box"></span>木工油漆完成</div>
+            <div class="prog-row"><span class="prog-box"></span>安裝訂造傢俬</div>
+            <div class="prog-row"><span class="prog-box"></span>完工驗收</div>
+        </div>
+    </div>
+</div>
+
+</div>
+
+<script>
+var D = document;
+
+function go(id){
+    var pages = ['home','furniture','quote','floorplan','view3d','contract','style','lists'];
+    for(var i=0; i<pages.length; i++){
+        var p = D.getElementById(pages[i]);
+        if(p) p.classList.add('hidden');
+    }
+    var t = D.getElementById(id);
+    if(t) t.classList.remove('hidden');
+    if(id==='view3d') start3D();
+    if(id==='contract') updateAll();
+}
+
+function on(id, fn){
+    var el = D.getElementById(id);
+    if(el) el.onclick = fn;
+}
+
+// 首頁
+on('m-furniture', function(){ go('furniture'); });
+on('m-quote', function(){ go('quote'); });
+on('m-floorplan', function(){ go('floorplan'); });
+on('m-view3d', function(){ go('view3d'); });
+on('m-contract', function(){ go('contract'); });
+on('m-style', function(){ go('style'); });
+on('m-lists', function(){ go('lists'); });
+
+// 返回
+on('b-furniture', function(){ go('home'); });
+on('b-quote', function(){ go('home'); });
+on('b-floorplan', function(){ go('home'); });
+on('b-view3d', function(){ go('home'); });
+on('b-contract', function(){ go('home'); });
+on('b-style', function(){ go('home'); });
+on('b-lists', function(){ go('home'); });
+
+// 傢俬
+var qty = {wardrobe:0, bed:0, tvstand:0, sofa:0};
+var feet = 8, area = 500;
+
+function updateAll(){
+    feet = parseInt(D.getElementById('feetInput').value) || 0;
+    var ft = (qty.wardrobe*3500*feet)+(qty.tvstand*3200*feet)+(qty.bed*9800)+(qty.sofa*15800);
+    var rn = area * 900;
+    var df = Math.round(rn * 0.08);
+    var tt = rn + ft + df;
+    
+    var e;
+    e = D.getElementById('furnitureTotal'); if(e) e.textContent = 'HK$ ' + ft.toLocaleString('en-US');
+    e = D.getElementById('renovationTotal'); if(e) e.textContent = 'HK$ ' + rn.toLocaleString('en-US');
+    e = D.getElementById('sRenovation'); if(e) e.textContent = 'HK$ ' + rn.toLocaleString('en-US');
+    e = D.getElementById('sFurniture'); if(e) e.textContent = 'HK$ ' + ft.toLocaleString('en-US');
+    e = D.getElementById('sDesign'); if(e) e.textContent = 'HK$ ' + df.toLocaleString('en-US');
+    e = D.getElementById('sTotal'); if(e) e.textContent = 'HK$ ' + tt.toLocaleString('en-US');
+}
+
+function cQ(item, delta){
+    qty[item] = Math.max(0, qty[item] + delta);
+    D.getElementById('q-'+item).textContent = qty[item];
+    updateAll();
+}
+
+on('wardrobe-p', function(){ cQ('wardrobe',1); });
+on('wardrobe-m', function(){ cQ('wardrobe',-1); });
+on('bed-p', function(){ cQ('bed',1); });
+on('bed-m', function(){ cQ('bed',-1); });
+on('tvstand-p', function(){ cQ('tvstand',1); });
+on('tvstand-m', function(){ cQ('tvstand',-1); });
+on('sofa-p', function(){ cQ('sofa',1); });
+on('sofa-m', function(){ cQ('sofa',-1); });
+
+function setFeetVal(v, btn){
+    feet = v; D.getElementById('feetInput').value = v;
+    var chips = document.querySelectorAll('#furniture .chip-btn');
+    for(var i=0; i<chips.length; i++) chips[i].classList.remove('on');
+    if(btn) btn.classList.add('on');
+    updateAll();
+}
+on('f-8', function(){ setFeetVal(8, this); });
+on('f-10', function(){ setFeetVal(10, this); });
+on('f-12', function(){ setFeetVal(12, this); });
+
+D.getElementById('feetInput').oninput = function(){ feet = parseInt(this.value)||0; updateAll(); };
+D.getElementById('areaInput').oninput = function(){ area = parseInt(this.value)||0; updateAll(); };
+
+function setAreaVal(v, btn){
+    area = v; D.getElementById('areaInput').value = v;
+    var chips = document.querySelectorAll('#quote .chip-btn');
+    for(var i=0; i<chips.length; i++) chips[i].classList.remove('on');
+    if(btn) btn.classList.add('on');
+    updateAll();
+}
+on('a-300', function(){ setAreaVal(300, this); });
+on('a-500', function(){ setAreaVal(500, this); });
+on('a-700', function(){ setAreaVal(700, this); });
+
+on('add-contract', function(){ updateAll(); alert('✅ 已加入合約！'); go('contract'); });
+on('to-contract', function(){ go('contract'); });
+on('to-furniture', function(){ go('furniture'); });
+
+// 合約
+on('preview-contract', function(){
+    updateAll();
+    var cn = D.getElementById('clientName').value || '___';
+    var cp = D.getElementById('clientPhone').value || '___';
+    var pa = D.getElementById('projectAddress').value || '___';
+    var sd = D.getElementById('startDate').value || '___';
+    var ed = D.getElementById('endDate').value || '___';
+    var today = new Date().toLocaleDateString('zh-HK');
+    var rn = D.getElementById('sRenovation').textContent;
+    var ft = D.getElementById('sFurniture').textContent;
+    var df = D.getElementById('sDesign').textContent;
+    var tt = D.getElementById('sTotal').textContent;
+    
+    var h = '<h2>🏠 意想行 - 裝修合約</h2>';
+    h += '<p style="text-align:center;font-size:11px;color:#666">編號: YX-'+Date.now().toString(36).toUpperCase()+' | '+today+'</p>';
+    h += '<table><tr><td>甲方</td><td>'+cn+'</td></tr><tr><td>電話</td><td>'+cp+'</td></tr><tr><td>地址</td><td>'+pa+'</td></tr><tr><td>乙方</td><td><b>意想行室內設計有限公司</b></td></tr></table>';
+    h += '<table><tr><td>裝修費</td><td>'+rn+'</td></tr><tr><td>傢俬費</td><td>'+ft+'</td></tr><tr><td>設計費</td><td>'+df+'</td></tr><tr style="background:#FFF3E0"><td><b>總金額</b></td><td><b>'+tt+'</b></td></tr></table>';
+    h += '<table><tr><td>開工</td><td>'+sd+'</td></tr><tr><td>完工</td><td>'+ed+'</td></tr></table>';
+    h += '<div style="background:#FFF3E0;padding:10px;border-left:4px solid #FF9800;margin:10px 0;font-size:11px"><b>⚠️ 條款：</b>保養12個月 | 追加須書面確認</div>';
+    h += '<div style="display:flex;justify-content:space-between;margin-top:30px"><div><b>甲方：</b><div style="border-top:1px solid #333;margin-top:35px;padding-top:5px">'+cn+'</div></div><div><b>乙方：</b><div style="border-top:1px solid #333;margin-top:35px;padding-top:5px">意想行</div></div></div>';
+    
+    var box = D.getElementById('contractBox');
+    box.innerHTML = h; box.style.display = 'block';
+    box.scrollIntoView({behavior:'smooth'});
+});
+
+on('print-contract', function(){
+    var box = D.getElementById('contractBox');
+    if(box.style.display === 'none') D.getElementById('preview-contract').click();
+    var w = window.open('','_blank','width=800,height=700');
+    w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>合約</title><style>body{font-family:sans-serif;padding:30px;line-height:1.7;font-size:13px;max-width:700px;margin:0 auto}h2{text-align:center;border-bottom:2px solid #333}table{width:100%;border-collapse:collapse;margin:10px 0}td{padd
